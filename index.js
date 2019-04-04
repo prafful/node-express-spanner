@@ -42,6 +42,21 @@ app.get("/spanner/all", async function(req, res){
 
 })
 
+app.post("/spanner/add", async (req, res)=>{
+    try {
+        await personaldetailTable.insert([
+            {id:'5', name:'OWIOH', location:'Ahmedabad'}
+        ])
+        res.send("insert success")
+        console.log("insert success")
+
+    } catch (error) {
+        console.error("Error try/catch: ", error)
+    }
+    res.end()
+   
+})
+
 app.post("/spanner/update", async (req, res)=>{
     try {
         await personaldetailTable.update([
