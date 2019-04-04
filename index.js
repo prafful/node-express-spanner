@@ -11,27 +11,50 @@ const myDatabaseId = 'databasefriends'
 const spanner = new Spanner({projectId:myProjectId})
 const instance = spanner.instance(myInstanceId)
 const database = instance.database(myDatabaseId)
+const personaldetailTable = database.table('personaldetail')
 
 const myquery = {
     sql:'select * from personaldetail'
+}
+
+const myqueryinsert = {
+    sql:"insert personaldetail (name, location, id) values ('Adi', 'Chennai', 3)"
 }
 
 
 var app = express()
 app.use(bp.json())
 
+app.get("/spanner/all", async function(req, res){
+    try {
+            await database.run(myquery).then((results)=>{
+                  console.log("Results Object:" )
+                  console.log(results[0])
+                  const rows = results[0]
+                  res.send(rows)
+                  res.end()
+                }).catch(error =>{
+                    console.error("Error Then: ", error)
+                })
+    } catch (error) {
+        console.error("Error Try/Catch:", error)
+    }
 
+})
 
+app.post("/spanner/add", async (req, res)=>{
+    try {
+        await personaldetailTable.insert([
+            {id:'5', name:'OWIOH', location:'Ahmedabad'}
+        ])
+        res.send("insert success")
+        console.log("insert success")
 
-app.get("/spanner/all", (req, res)=>{
-    database.run(myquery).then((results)=>{
-        console.log("Results Object:" )
-        console.log(results[0])
-        const rows = results[0]
-        res.send(rows)
-        res.end()
-        
-    })
+    } catch (error) {
+        console.error("Error try/catch: ", error)
+    }
+    res.end()
+   
 })
 
 app.listen(1111)
